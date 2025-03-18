@@ -7,25 +7,43 @@ using DocumentFormat.OpenXml.Packaging;
 namespace CVtesting;
 
 public class InputParser {
-    public const string testpath = "/home/roni/repos/CVtesting/test.docx"; 
     
-    public static List<String> ExtractTextFromDocx(string filePath)
+    public static List<string> ExtractTextFromDocx(string filePath, ref string text)
     {
         using WordprocessingDocument docReader = WordprocessingDocument.Open(filePath, false);  // open read-only
 
-        string header = string.Join("\n", docReader.MainDocumentPart!.HeaderParts.Select(h => h.Header.InnerText));
-        string footer = string.Join("\n", docReader.MainDocumentPart.FooterParts.Select(f => f.Footer.InnerText));
-        var paragraphs = docReader.MainDocumentPart.Document.Body!.Elements<Paragraph>();
+        var paragraphs = docReader.MainDocumentPart!.Document.Body!.Elements<Paragraph>();
 
-        List<String> segments = [];
-        segments.Add(header);
+        List<string> segments = [];
         foreach (var paragraph in paragraphs) {
-            string text = paragraph.InnerText;
-            segments.Add(text);
+            string innerText = paragraph.InnerText;
+            segments.Add(innerText);
         }
-        segments.Add(footer);
-        string.Join("\n", segments);
+
         
+        if (text.Length < 50) {  // failsafe since cv templates are sometimes formatted in tables
+            foreach (var table in docReader.MainDocumentPart!.Document.Body.Elements<Table>())
+            {
+                foreach (var row in table.Elements<TableRow>())
+                {
+                    foreach (var cell in row.Elements<TableCell>())
+                    {
+                        var cellLines = cell.Elements<Paragraph>() // ignore empty formatting cells
+                            .Select(p => p.InnerText.Trim())       // and join with spaces to prevent merged words
+                            .Where(line => !string.IsNullOrEmpty(line));
+                        string cellText = string.Join(" ", cellLines);  
+
+                        if (string.IsNullOrWhiteSpace(cellText)) { segments.Add(" "); }
+                        else { segments.Add(cellText); }
+                    }
+                }
+            }
+            
+        }
+        text = string.Join("|", segments);
+        if (text.Length < 50) {
+            throw new Exception("Unable to parse resume, not all functions will work (TODO)");
+        }
         return segments;
     }
 }

@@ -21,16 +21,17 @@ public class Translate
         return key;
     }
 
-    public static async Task<String> ToCzech()
+    // TODO: ref is here because of testing, remove later
+    public static async Task<String> GetText(string from, string to, string text) // add string text
     {
         string endpoint = "https://api.cognitive.microsofttranslator.com";
         string key = GetKey().Result;
-        string route = "/translate?api-version=3.0&from=en&to=cs";
+        string route = $"/translate?api-version=3.0&from={from}&to={to}";
         string location = "germanywestcentral";
 
-        string textEN = string.Join("\n", InputParser.ExtractTextFromDocx(InputParser.testpath)); // <-- Comment out
+        string textfrom = text; // <-- Comment out
         //string textEN = <parameter>;
-        object[] textObject = new object[] { new { Text = textEN }}; 
+        object[] textObject = new object[] { new { Text = textfrom }}; 
         var textJson = JsonConvert.SerializeObject(textObject);
 
         using (var client = new HttpClient())
@@ -42,8 +43,11 @@ public class Translate
             request.Headers.Add("Ocp-Apim-Subscription-Region", location);
 
             HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
-            string result = await response.Content.ReadAsStringAsync();
-            return result;
+            string resultJson = await response.Content.ReadAsStringAsync();
+            var translations = JsonConvert.DeserializeObject<List<translateResponse>>(resultJson);
+            string textto = translations?[0]?.Translations?[0]?.Text ?? "Translation request or parsing failed";
+
+            return textto;
         }
     }
 }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CVtesting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9273e3b86991c4c755fd1e8c3f314af80c908f8f")]
 [assembly: System.Reflection.AssemblyProductAttribute("CVtesting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CVtesting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
