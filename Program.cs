@@ -4,11 +4,12 @@ class Program
 {
     static async Task Main(string[] args)
     {   
-        string parsedText = String.Empty;
-        List<string> segments = InputParser.ExtractTextFromDocx("/home/roni/repos/CVtesting/test.docx", ref parsedText);
+        string parsedText = InputParser.ExtractTextFromDocx("/home/roni/repos/CVtesting/test.docx");
         
-        string cs = await Translate.GetText("en","cs", parsedText);
-        Console.WriteLine(cs);
+        string cstext = await Translate.GetText("en","cs", parsedText);
+        
+        string[] segments = cstext.Split("|");
+        foreach (string s in segments) { Console.WriteLine(s); }
     }
 
 }

@@ -21,8 +21,7 @@ public class Translate
         return key;
     }
 
-    // TODO: ref is here because of testing, remove later
-    public static async Task<String> GetText(string from, string to, string text) // add string text
+    public static async Task<String> GetText(string from, string to, string text)
     {
         string endpoint = "https://api.cognitive.microsofttranslator.com";
         string key = GetKey().Result;

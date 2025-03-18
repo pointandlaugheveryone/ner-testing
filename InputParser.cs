@@ -8,7 +8,7 @@ namespace CVtesting;
 
 public class InputParser {
     
-    public static List<string> ExtractTextFromDocx(string filePath, ref string text)
+    public static string ExtractTextFromDocx(string filePath)
     {
         using WordprocessingDocument docReader = WordprocessingDocument.Open(filePath, false);  // open read-only
 
@@ -20,7 +20,8 @@ public class InputParser {
             segments.Add(innerText);
         }
 
-        
+        string text = string.Join("|", segments);
+
         if (text.Length < 50) {  // failsafe since cv templates are sometimes formatted in tables
             foreach (var table in docReader.MainDocumentPart!.Document.Body.Elements<Table>())
             {
@@ -38,13 +39,13 @@ public class InputParser {
                     }
                 }
             }
-            
+            text = string.Join("|", segments);
         }
-        text = string.Join("|", segments);
+        
         if (text.Length < 50) {
             throw new Exception("Unable to parse resume, not all functions will work (TODO)");
         }
-        return segments;
+        return text;
     }
 }
 
