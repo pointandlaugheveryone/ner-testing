@@ -12,39 +12,24 @@ public class InputParser {
     {
         using WordprocessingDocument docReader = WordprocessingDocument.Open(filePath, false);  // open read-only
 
-        var paragraphs = docReader.MainDocumentPart!.Document.Body!.Elements<Paragraph>();
+        var body = docReader.MainDocumentPart!.Document.Body!;
+        List<string> segments = new List<string>();
 
-        List<string> segments = [];
-        foreach (var paragraph in paragraphs) {
-            string innerText = paragraph.InnerText;
-            segments.Add(innerText);
+        foreach (var element in body.Elements())
+        {
+            string elementText = string.Join(" ", element.Descendants<Text>().Select(t => t.Text)); 
+            if (!string.IsNullOrWhiteSpace(elementText)) { segments.Add(elementText); }
+            else { segments.Add("|"); }  // empty cells or lines used for formatting
         }
 
         string text = string.Join("|", segments);
+        Console.WriteLine(text);
 
-        if (text.Length < 50) {  // failsafe since cv templates are sometimes formatted in tables
-            foreach (var table in docReader.MainDocumentPart!.Document.Body.Elements<Table>())
-            {
-                foreach (var row in table.Elements<TableRow>())
-                {
-                    foreach (var cell in row.Elements<TableCell>())
-                    {
-                        var cellLines = cell.Elements<Paragraph>() // ignore empty formatting cells
-                            .Select(p => p.InnerText.Trim())       // and join with spaces to prevent merged words
-                            .Where(line => !string.IsNullOrEmpty(line));
-                        string cellText = string.Join(" ", cellLines);  
+        if (text.Length < 50)
+        {
+            throw new Exception("Parsing function failed - Obscure formatting");
+        }
 
-                        if (string.IsNullOrWhiteSpace(cellText)) { segments.Add(" "); }
-                        else { segments.Add(cellText); }
-                    }
-                }
-            }
-            text = string.Join("|", segments);
-        }
-        
-        if (text.Length < 50) {
-            throw new Exception("Unable to parse resume, not all functions will work (TODO)");
-        }
         return text;
     }
 }
