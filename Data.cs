@@ -22,13 +22,21 @@ public class Data {
             string pathwrite = $"/home/roni/repos/CVtesting/dataset/{i}.txt";
 
             using (StreamReader sr = new(pathread)) {
-                string jsonstring = sr.ReadLine()!;
-                Root dataRoot = JsonConvert.DeserializeObject<Root>(jsonstring)!;
-                
-                using (StreamWriter sw = new(pathwrite)) {
-                    sw.WriteLine(dataRoot.content);
-                }
+                string jsonString = sr.ReadLine()!;
+                Root dataRoot = JsonConvert.DeserializeObject<Root>(jsonString)!;
+
+                using StreamWriter sw = new(pathwrite);
+                sw.WriteLine(dataRoot.content);
             }
         }
+    }
+
+    public static void Label() {
+        for (int i = 1; i <= 220; i++) {
+            string path = $"/home/roni/repos/CVtesting/datajson/{i}.json";
+            using StreamReader sr = new(path);
+            string jsonString = sr.ReadLine()!;
+            Root dataRoot = JsonConvert.DeserializeObject<Root>(jsonString)!;
+        };
     }
 }
