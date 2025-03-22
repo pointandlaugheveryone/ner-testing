@@ -1,6 +1,3 @@
-using Newtonsoft;
-using System;
-using System.IO;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml.Packaging;
 
@@ -17,13 +14,12 @@ public class InputParser {
 
         foreach (var element in body.Elements())
         {
-            string elementText = string.Join(" ", element.Descendants<Text>().Select(t => t.Text)); 
+            string elementText = string.Join("", element.Descendants<Text>().Select(t => t.Text)); 
             if (!string.IsNullOrWhiteSpace(elementText)) { segments.Add(elementText); }
             else { segments.Add("|"); }  // empty cells or lines used for formatting
         }
 
         string text = string.Join("|", segments);
-        Console.WriteLine(text);
 
         if (text.Length < 50)
         {

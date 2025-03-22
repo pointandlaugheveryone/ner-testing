@@ -1,3 +1,6 @@
 test.docx
 /bin
 /obj
+/datajson
+dataset_raw.json
+/examples

@@ -42,11 +42,17 @@ public class Translate
             request.Headers.Add("Ocp-Apim-Subscription-Region", location);
 
             HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+            if (response.IsSuccessStatusCode) {
             string resultJson = await response.Content.ReadAsStringAsync();
             var translations = JsonConvert.DeserializeObject<List<translateResponse>>(resultJson);
             string textto = translations?[0]?.Translations?[0]?.Text ?? "Translation request or parsing failed";
-
             return textto;
+            }
+            else {  //TODO: azure application insights or whatever for logging
+                Console.WriteLine($"{response.StatusCode}\n{response.Content}");
+                return String.Empty;
+            }
+            
         }
     }
 }
