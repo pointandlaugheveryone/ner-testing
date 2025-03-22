@@ -11,7 +11,7 @@ class Program
         //Console.WriteLine(parsedText);
         //Console.WriteLine(entext);
         //Console.WriteLine($"{regexres["phone"]}\n{regexres["email"]}\n{regexres["linkedin"]}");
-        Data.MakeFiles();
+        Data.ProcessText();
     }
 
 }
