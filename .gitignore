@@ -3,5 +3,8 @@ test.docx
 /obj
 /datajson
 dataset_raw.json
-/dataset
+/DATASET
 templatelabels.json
+.vscode/
+/csv
+notes.md
