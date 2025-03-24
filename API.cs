@@ -1,16 +1,17 @@
 using System.Text;
+using Azure;
+using Azure.AI.TextAnalytics;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Newtonsoft.Json;
 
 namespace CVtesting;
 
-public class Translate
+public class AzureAI
 {
 
-    private static async Task<String> GetKey()
+    private static async Task<String> GetAzureKey(string keyName)
     {
-        const string keyName = "translationKey";
         var kvName = "CVbutbetter";
         var kvUri = $"https://{kvName}.vault.azure.net";
 
@@ -21,10 +22,10 @@ public class Translate
         return key;
     }
 
-    public static async Task<String> GetText(string from, string to, string text)
+    public static async Task<String> Translate(string from, string to, string text)
     {
         string endpoint = "https://api.cognitive.microsofttranslator.com";
-        string key = GetKey().Result;
+        string key = GetAzureKey("translationKey").Result;
         string route = $"/translate?api-version=3.0&from={from}&to={to}";
         string location = "germanywestcentral";
 
@@ -53,6 +54,21 @@ public class Translate
                 return String.Empty;
             }
             
+        }
+    }
+
+    public static void GetSkills(string text) { // async is actually built in into Azure ai sdk
+        string key = GetAzureKey("cv-ai-apis-key").Result;
+        AzureKeyCredential credentials = new(key);
+
+        Uri endpoint = new("https://cv-ai-apis.cognitiveservices.azure.com/");
+        
+        var client = new TextAnalyticsClient(endpoint, credentials);
+        var response = client.RecognizeEntities(text);
+
+        var entities = response.Value;
+        foreach (var entity in entities) {
+            Console.WriteLine($"{entity.Text},{entity.Category}");
         }
     }
 }
