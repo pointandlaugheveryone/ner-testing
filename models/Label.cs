@@ -15,7 +15,6 @@
 
     public class Entity
     {
-        public string category { get; set; }
         public int regionOffset { get; set; }
         public int regionLength { get; set; }
         public List<Label> labels { get; set; }

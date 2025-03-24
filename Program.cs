@@ -4,7 +4,7 @@ namespace CVtesting;
 
 class Program
 {
-    static async Task Main(string[] args)
+    static void Main(string[] args)
     {
         
         //string parsedText = InputParser.ExtractTextFromDocx("/home/roni/repos/CVtesting/test.docx");

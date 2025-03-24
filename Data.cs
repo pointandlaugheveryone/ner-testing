@@ -57,18 +57,15 @@ public class Data
             entities = []
         };
 
-
         for (int i = 1; i <= 220; i++)
         {
+            // Read one JSON line from the dataset
             string jsonPath = $"/home/roni/repos/CVtesting/datajson/{i}.json";
-            string textPath = $"/home/roni/repos/CVtesting/DATASET/{i}.txt";
-
             using StreamReader sr = new(jsonPath);
             string jsonString = sr.ReadLine()!;
-
-            // data from original dataset
             Resume inputData = JsonConvert.DeserializeObject<Resume>(jsonString)!;
 
+            // Create a Document object for each file
             Document doc = new()
             {
                 location = $"{i}.txt",
@@ -76,48 +73,22 @@ public class Data
                 entities = []
             };
 
-
             foreach (var annotation in inputData.annotation)
             {
-                var mergedPoints = annotation.points
-                    .OrderBy(p => p.start)
-                    .Aggregate(new List<Point>(), (acc, p) =>
-                    {
-                        if (acc.Count == 0)
-                        {
-                            acc.Add(p);
-                        }
-                        else
-                        {
-                            var last = acc[^1];
-                            if (p.start <= last.end)
-                            {
-                                last.end = Math.Max(last.end, p.end); // merge overlapping entity ranges
-                            }
-                            else
-                            {
-                                acc.Add(p); //create Entity from label
-                            }
-                        }
-                        return acc;
-                    });
-
-                foreach (var point in mergedPoints)
+                foreach (var point in annotation.points)
                 {
                     int offset = point.start;
                     int length = point.end - point.start;
 
-                    // add entities to output doc
                     foreach (var labelValue in annotation.label)
                     {
                         Entity entity = new()
                         {
-                            category = labelValue,
                             regionOffset = offset,
                             regionLength = length,
                             labels =
                             [
-                                new()
+                                new Label
                                 {
                                     category = labelValue,
                                     offset = offset,
@@ -129,11 +100,12 @@ public class Data
                     }
                 }
             }
+
             assets.documents.Add(doc);
         }
 
         root.assets = assets;
-        string outputFile = "/home/roni/repos/CVtesting/labels2.json";
+        string outputFile = "/home/roni/repos/CVtesting/labels3.json";
         string result = JsonConvert.SerializeObject(root, Formatting.Indented);
         File.WriteAllText(outputFile, result);
     }
