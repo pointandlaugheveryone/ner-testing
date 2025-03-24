@@ -10,7 +10,7 @@ public class InputParser {
         using WordprocessingDocument docReader = WordprocessingDocument.Open(filePath, false);  // open read-only
 
         var body = docReader.MainDocumentPart!.Document.Body!;
-        List<string> segments = new List<string>();
+        List<string> segments = [];
 
         foreach (var element in body.Elements())
         {
